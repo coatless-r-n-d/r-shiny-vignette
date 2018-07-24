@@ -1,0 +1,63 @@
+---
+title: "Shiny Vignette"
+author: "JJB"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+runtime: shiny
+vignette: >
+  %\VignetteIndexEntry{Shiny Vignette Test}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Intro
+
+This vignette is meant to quickly showcase how to embed a shiny application
+into a package's vignette directory.
+
+## Shiny App
+
+Next, we're going to embed the default Shiny application that ships with RStudio.
+
+```{r}
+library(shiny)
+
+# Define UI for application that draws a histogram
+ui <- fluidPage(
+    
+    # Application title
+    titlePanel("Old Faithful Geyser Data"),
+    
+    # Sidebar with a slider input for number of bins 
+    sidebarLayout(
+        sidebarPanel(
+            sliderInput("bins",
+                        "Number of bins:",
+                        min = 1,
+                        max = 50,
+                        value = 30)
+        ),
+        
+        # Show a plot of the generated distribution
+        mainPanel(
+            plotOutput("distPlot")
+        )
+    )
+)
+
+# Define server logic required to draw a histogram
+server <- function(input, output) {
+    
+    output$distPlot <- renderPlot({
+        # generate bins based on input$bins from ui.R
+        x    <- faithful[, 2] 
+        bins <- seq(min(x), max(x), length.out = input$bins + 1)
+        
+        # draw the histogram with the specified number of bins
+        hist(x, breaks = bins, col = 'darkgray', border = 'white')
+    })
+}
+
+# Run the application 
+shinyApp(ui = ui, server = server)
+```
